@@ -4,12 +4,20 @@
 		<title>three.js webgl - loaders - Clara.io JSON loader</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-
+		<style>
+			button {
+				padding: 10px;
+				background-color: blue;
+				color: white;
+				border-radius: 10px;
+				margin: 5px;
+			}
+		</style>
 	</head>
 
 	<body>
 		<div id="info">
-			<button id="dance" onclick="_doMove()">Move</button>
+			<button id="dance" onclick="_doMove()">Next animation</button><span id="msg">Wait for it !!</span>
 			<!-- <button id="dancestop" onclick="_stopDance()">Stop</button> -->
 		</div>
 		<script src="build/three.js"></script>
@@ -25,6 +33,9 @@
 			var clock = new THREE.Clock();
 
 			var mixers = [];
+			var actionIndex = 3;
+			var action;
+			var h = new THREE.Vector3( 0, 2, 0 );
 
 			init();
 			animate();
@@ -32,6 +43,7 @@
 			function init() {
 
 				container = document.createElement( 'div' );
+
 				document.body.appendChild( container );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
@@ -64,6 +76,9 @@
 				 	scene.add( themoose );
 					console.log( "The Moose" );
 					console.log( obj );
+					h = h.add(themoose.position);
+					document.getElementById('msg').innerHTML = "Moose !!!";
+					this._doMove();
 				} );
 				// END Clara.io JSON loader code
 
@@ -102,7 +117,7 @@
 
 			function render() {
 
-				camera.lookAt( scene.position );
+				camera.lookAt( h );
 
 				renderer.render( scene, camera );
 
@@ -110,13 +125,11 @@
 
 			function _doMove() {
 				console.log("in doDance");
-				var action = themoose.mixer.clipAction( themoose.animations[ 0 ] );
-
+				if (action) {action.stop();}
+				action = themoose.mixer.clipAction( themoose.animations[ actionIndex ] );
 				action.play();
-
-				console.log(action);
-
-				action.play();
+				actionIndex += 1;
+				if ( actionIndex >= themoose.animations.length ) {actionIndex = 0;}
 
 			}
 
