@@ -8,6 +8,10 @@
 	</head>
 
 	<body>
+		<div id="info">
+			<button id="dance" onclick="_doMove()">Move</button>
+			<!-- <button id="dancestop" onclick="_stopDance()">Stop</button> -->
+		</div>
 		<script src="build/three.js"></script>
 		<script src="js/controls/OrbitControls.js"></script>
     <script src="js/libs/inflate.min.js"></script>
@@ -16,6 +20,11 @@
 
 			var container;
 			var camera, scene, renderer;
+			var themoose;
+
+			var clock = new THREE.Clock();
+
+			var mixers = [];
 
 			init();
 			animate();
@@ -46,7 +55,15 @@
 				// BEGIN Clara.io JSON loader code
 				var objectLoader = new THREE.FBXLoader();
 				objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", function ( obj ) {
-				 	scene.add( obj );
+
+					obj.mixer = new THREE.AnimationMixer( obj );
+					mixers.push( obj.mixer );
+
+					themoose = obj;
+
+				 	scene.add( themoose );
+					console.log( "The Moose" );
+					console.log( obj );
 				} );
 				// END Clara.io JSON loader code
 
@@ -72,6 +89,13 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
+
+				if ( mixers.length > 0 ) {
+					for ( var i = 0; i < mixers.length; i ++ ) {
+						mixers[ i ].update( clock.getDelta() );
+					}
+				}
+
 				render();
 
 			}
@@ -81,6 +105,18 @@
 				camera.lookAt( scene.position );
 
 				renderer.render( scene, camera );
+
+			}
+
+			function _doMove() {
+				console.log("in doDance");
+				var action = themoose.mixer.clipAction( themoose.animations[ 0 ] );
+
+				action.play();
+
+				console.log(action);
+
+				action.play();
 
 			}
 
