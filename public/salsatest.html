@@ -39,7 +39,9 @@
 
 	<body>
 		<div id="info">
-			<button id="dance" onclick="_doDance()">Dance</button>
+			<button id="dance" onclick="_doDance(0)">Samba</button>
+			<button id="dance" onclick="_doDance(2)">Hip Hop</button>
+			<button id="dance" onclick="_doDance(3)">Golf Drive</button>
 			<button id="dancestop" onclick="_stopDance()">Stop</button>
 		</div>
 
@@ -114,12 +116,27 @@
 				// model
 
 				var loader = new THREE.FBXLoader();
-				loader.load( 'models/Samba Dancing.fbx', function ( object ) {
+
+				var testAnimation, testAnimation2;
+
+				loader.load( 'models/Hip Hop Dancing.fbx', ( obj ) => {
+					testAnimation = obj.animations[ 0 ]
+					console.log( testAnimation );
+				} );
+
+				loader.load( 'models/Golf Drive.fbx', ( obj ) => {
+					testAnimation2 = obj.animations[ 0 ]
+					console.log( testAnimation2 );
+				} );
+
+				loader.load( 'models/Samba Dancing.fbx', ( object ) => {
+
+
 
 					object.mixer = new THREE.AnimationMixer( object );
 
 					mixers.push( object.mixer );
-					console.log(object.animations[ 0 ]);
+					// console.log(object.animations[ 0 ]);
 
 					// var action = object.mixer.clipAction( object.animations[ 0 ] );
 					// action.play();
@@ -135,11 +152,17 @@
 
 					} );
 
+					console.log( object.animations );
+					object.animations.push( testAnimation );
+					object.animations.push( testAnimation2 );
+					console.log( object.animations );
+
 					character = object;
 
 					scene.add( character );
 
 				} );
+
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -186,9 +209,10 @@
 
 			}
 
-			function _doDance() {
-				console.log("in doDance");
-				var action = character.mixer.clipAction( character.animations[ 0 ] );
+			function _doDance(d) {
+				// console.log("in doDance " + parseInt(d));
+				character.mixer.stopAllAction();
+				var action = character.mixer.clipAction( character.animations[ parseInt(d) ] );
 				if (action.paused) {
 					action.paused = false;
 					// action.fadeIn(2);
@@ -196,16 +220,17 @@
 					action.play();
 				}
 
-				console.log( action );
+				// console.log( action );
 			}
 
 			function _stopDance() {
 				console.log("in _stopDance");
-				var action = character.mixer.clipAction( character.animations[ 0 ] );
-				// action.stop();
-				// action.paused = true;
-				action.halt(2);
-				console.log( action );
+				// var action = character.mixer.clipAction( character.animations[ 2 ] );
+				// // action.stop();
+				// // action.paused = true;
+				// action.halt(2);
+				// console.log( action );
+				character.mixer.stopAllAction();
 			}
 
 		</script>
