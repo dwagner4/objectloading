@@ -60,13 +60,29 @@
 
 			var container, stats, controls;
 			var camera, scene, renderer, light;
-			var character;
+
+			let jill_character = {
+					name: "Jill",
+					meshfile: 'models/Zombie_Jill/jill.fbx',
+					characterAnimations: [
+							"models/Zombie_Jill/zombiewalk.fbx",
+							"models/Zombie_Jill/zombiescream.fbx",
+							"models/Zombie_Jill/runningcrawl.fbx",
+							"models/Zombie_Jill/zombieattack.fbx",
+							"models/Zombie_Jill/zombiebiting.fbx",
+							"models/Zombie_Jill/zombiecrawl.fbx",
+							"models/Zombie_Jill/zombiedeath.fbx",
+							"models/Zombie_Jill/zombiedying.fbx",
+							"models/Zombie_Jill/zombieidle.fbx",
+							"models/Zombie_Jill/zombieneckbite.fbx",
+							"models/Zombie_Jill/zombierun.fbx"
+						]
+				};
 
 			var clock = new THREE.Clock();
 
-			var mixers = [];
-			var actionIndex = 2;
-			var action;
+			var mixers = [];  // used in the animate loop to avoid seaching for mixers, duplicates on objects
+
 
 			init();
 			animate();
@@ -113,45 +129,7 @@
 				grid.material.transparent = true;
 				scene.add( grid );
 
-				// model
-
-				// animations will load in reverse order starting at index '2'
-				let jill_animations = [
-					"models/Zombie_Jill/zombiewalk.fbx",
-					"models/Zombie_Jill/zombiescream.fbx"
-				];
-
-				var loader = new THREE.FBXLoader();
-
-				var testAnimations = [];
-				for (var i = 0; i < jill_animations.length; i++) {
-					loader.load( jill_animations[i], ( obj ) => {
-						testAnimations.push( obj.animations[ 0 ] );
-					} );
-				}
-
-				loader.load( 'models/Zombie_Jill/jill.fbx', ( object ) => {
-					object.mixer = new THREE.AnimationMixer( object );
-					mixers.push( object.mixer );
-					object.traverse( function ( child ) {
-						if ( child.isMesh ) {
-							child.castShadow = true;
-							child.receiveShadow = true;
-						}
-					} );
-
-					console.log( object.animations );
-					for (var i = 0; i < testAnimations.length; i++) {
-						object.animations.push( testAnimations[i] );
-					}
-					console.log( object.animations );
-
-					character = object;
-
-					scene.add( character );
-
-				} );
-
+				makeFBXCharacter(jill_character, scene, mixers);
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -164,6 +142,7 @@
 				// stats
 				stats = new Stats();
 				container.appendChild( stats.dom );
+
 			}
 
 			function onWindowResize() {
@@ -183,20 +162,54 @@
 				stats.update();
 			}
 
+// ****************  Scene Logic  *******************
+
+			var actionIndex = 2;
+			var action;
+
 			function _doMove() {
 				console.log("in doDance");
 				if (action) {action.stop();}
-				action = character.mixer.clipAction( character.animations[ actionIndex ] );
+				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
 				action.play();
 				actionIndex += 1;
-				if ( actionIndex >= character.animations.length ) {actionIndex = 0;}
+				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
 
 			}
 
 			function _stopDance() {
 				console.log("in _stopDance");
-				character.mixer.stopAllAction();
+				scene.getObjectByName("Jill").mixer.stopAllAction();
 			}
+
+// ****************  character utility  ******************
+
+		// @charParams is object with meshfile and array of animations
+		function makeFBXCharacter (charParams, theScene, theMixers) {
+			var loader = new THREE.FBXLoader();
+
+			var testAnimations = [];
+			for (var i = 0; i < charParams.characterAnimations.length; i++) {
+				loader.load( charParams.characterAnimations[i], ( obj ) => {
+					testAnimations.push( obj.animations[ 0 ] );
+				} );
+			}
+			loader.load( charParams.meshfile, ( object ) => {
+				object.traverse( function ( child ) {
+					if ( child.isMesh ) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+					}
+				} );
+				for (var i = 0; i < testAnimations.length; i++) {
+					object.animations.push( testAnimations[i] );
+				}
+				object.name = charParams.name;
+				object.mixer = new THREE.AnimationMixer( object );
+				theMixers.push( object.mixer );
+				theScene.add(object);
+			} );
+		}
 
 		</script>
 
