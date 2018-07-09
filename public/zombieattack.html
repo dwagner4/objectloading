@@ -40,7 +40,7 @@
 	<body>
 		<div id="info">
 			<button id="dance" onclick="_doMove()">Next animation</button>
-			<button id="dance" onclick="_repeat()">Repeat</button>
+			<button id="repeat" onclick="_repeat()">Repeat</button>
 			<button id="dancestop" onclick="_stopDance()">Stop</button>
 		</div>
 
@@ -60,7 +60,7 @@
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			var container, stats, controls;
-			var camera, scene, renderer, light;
+			var camera, scene, renderer, light, newObj;
 
 			let jill_character = {
 					name: "Jill",
@@ -88,6 +88,8 @@
 			init();
 			animate();
 
+
+
 			function init() {
 
 				container = document.createElement( 'div' );
@@ -107,16 +109,34 @@
 
 				// light = new THREE.HemisphereLight( 0x888888, 0x222222 );
 				// light.position.set( 0, 200, 0 );
-				scene.add( light );
+				// scene.add( light );
 
-				light = new THREE.DirectionalLight( 0xffffff, 0.2 );
-				light.position.set( 0, 200, 100 );
-				light.castShadow = true;
-				light.shadow.camera.top = 180;
-				light.shadow.camera.bottom = -100;
-				light.shadow.camera.left = -120;
-				light.shadow.camera.right = 120;
-				scene.add( light );
+				// light = new THREE.DirectionalLight( 0xffffff, 0.2 );
+				// light.position.set( 0, 200, 100 );
+				// light.castShadow = true;
+				// light.shadow.camera.top = 180;
+				// light.shadow.camera.bottom = -100;
+				// light.shadow.camera.left = -120;
+				// light.shadow.camera.right = 120;
+				// scene.add( light );
+
+				newObj = new THREE.SpotLight( 0xFF7F00, 2 );
+				newObj.castShadow = true;
+				newObj.angle = 0.3;
+				newObj.penumbra = 0.2;
+				newObj.decay = 2;
+				newObj.distance = 1000;
+				newObj.shadow.mapSize.width = 1024;
+				newObj.shadow.mapSize.height = 1024;
+				
+				// newObj.position.set( 150, 200, 450 );
+				newObj.position.set(camera.position.x, camera.position.y, camera.position.z);
+				// newObj.rotateY(-1.5);
+				scene.add(newObj);
+
+				var lightHelper1 = new THREE.SpotLightHelper( newObj);
+				scene.add(lightHelper1);
+
 
 
 				// ground
@@ -159,6 +179,7 @@
 						mixers[ i ].update( clock.getDelta() );
 					}
 				}
+				newObj.position.set(camera.position.x, camera.position.y, camera.position.z);
 				renderer.render( scene, camera );
 				stats.update();
 			}
@@ -238,6 +259,9 @@
 				theScene.add(object);
 			} );
 		}
+
+
+
 
 		</script>
 
