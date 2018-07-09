@@ -40,6 +40,7 @@
 	<body>
 		<div id="info">
 			<button id="dance" onclick="_doMove()">Next animation</button>
+			<button id="dance" onclick="_repeat()">Repeat</button>
 			<button id="dancestop" onclick="_stopDance()">Stop</button>
 		</div>
 
@@ -100,14 +101,15 @@
 				controls.update();
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xa0a0a0 );
-				scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
+				scene.background = new THREE.Color( 0x202020 );
+				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
+				// scene.add( spotLight );
 
-				light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-				light.position.set( 0, 200, 0 );
+				// light = new THREE.HemisphereLight( 0x888888, 0x222222 );
+				// light.position.set( 0, 200, 0 );
 				scene.add( light );
 
-				light = new THREE.DirectionalLight( 0xffffff );
+				light = new THREE.DirectionalLight( 0xffffff, 0.2 );
 				light.position.set( 0, 200, 100 );
 				light.castShadow = true;
 				light.shadow.camera.top = 180;
@@ -116,7 +118,6 @@
 				light.shadow.camera.right = 120;
 				scene.add( light );
 
-				// scene.add( new THREE.CameraHelper( light.shadow.camera ) );
 
 				// ground
 				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
@@ -172,14 +173,26 @@
 			function _doMove() {
 				console.log("in doDance");
 				if (action) {action.stop();}
+				actionIndex += 1;
+				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
 				scene.getObjectByName("Jill").translateX(lastX);
 				scene.getObjectByName("Jill").translateZ(lastZ);
 				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
 				action.setLoop(THREE.LoopOnce)
 				action.play();
 				action.clampWhenFinished = true;
-				actionIndex += 1;
-				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
+			}
+
+			function _repeat() {
+				console.log("in doDance");
+				if (action) {action.stop();}
+
+				scene.getObjectByName("Jill").translateX(lastX);
+				scene.getObjectByName("Jill").translateZ(lastZ);
+				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+				action.setLoop(THREE.LoopOnce)
+				action.play();
+				action.clampWhenFinished = true;
 			}
 
 			function _stopDance() {
