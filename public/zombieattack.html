@@ -144,6 +144,8 @@
 					// Ask the browser to lock the pointer
 					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
 					element.requestPointerLock();
+					_doMove();
+
 
 				}, false );
 
@@ -218,6 +220,8 @@
 				/**************************************/
 
 				controls = new THREE.PointerLockControls( camera );
+				controls.getObject().position.y = 10;
+				controls.getObject().position.z = 900;
 				scene.add( controls.getObject() );
 				var onKeyDown = function ( event ) {
 					console.log("keydown");
@@ -274,20 +278,20 @@
 
 
 
-				// flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
-				// flashLight.castShadow = true;
-				// flashLight.angle = 0.3;
-				// flashLight.penumbra = 0.2;
-				// flashLight.decay = 2;
-				// flashLight.distance = 1000;
-				// flashLight.shadow.mapSize.width = 1024;
-				// flashLight.shadow.mapSize.height = 1024;
-				//
-				// // flashLight.position.set( 150, 200, 450 );
+				flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
+				flashLight.castShadow = true;
+				flashLight.angle = 0.5;
+				flashLight.penumbra = 0.2;
+				flashLight.decay = 2;
+				flashLight.distance = 1500;
+				flashLight.shadow.mapSize.width = 1024;
+				flashLight.shadow.mapSize.height = 1024;
+
+				flashLight.position.set( 0, 300, 850);
 				// flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
-				// // flashLight.rotateY(-1.5);
-				// scene.add(flashLight);
-				//
+				// flashLight.rotateY(-1.5);
+				scene.add(flashLight);
+
 				// var lightHelper1 = new THREE.SpotLightHelper( flashLight);
 				// scene.add(lightHelper1);
 
@@ -374,23 +378,23 @@
 
 // ****************  Scene Logic  *******************
 
-			// var actionIndex = 2;
-			// var action;
-			// var lastX = 0; // X position of hips in last frame of previous animation
-			// var lastZ = 0; // Z position of hips in last frame of previous animation
-			//
-			// function _doMove() {
-			// 	console.log("in doDance");
-			// 	if (action) {action.stop();}
-			// 	actionIndex += 1;
-			// 	if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
-			// 	scene.getObjectByName("Jill").translateX(lastX);
-			// 	scene.getObjectByName("Jill").translateZ(lastZ);
-			// 	action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
-			// 	action.setLoop(THREE.LoopOnce)
-			// 	action.play();
-			// 	action.clampWhenFinished = true;
-			// }
+			var actionIndex = 2;
+			var action;
+			var lastX = 0; // X position of hips in last frame of previous animation
+			var lastZ = 0; // Z position of hips in last frame of previous animation
+
+			function _doMove() {
+				console.log("in doDance");
+				if (action) {action.stop();}
+				actionIndex += 1;
+				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
+				scene.getObjectByName("Jill").translateX(lastX);
+				scene.getObjectByName("Jill").translateZ(lastZ);
+				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+				action.setLoop(THREE.LoopOnce)
+				action.play();
+				action.clampWhenFinished = true;
+			}
 			//
 			// function _repeat() {
 			// 	console.log("in doDance");
@@ -436,12 +440,13 @@
 					console.log("loop event")
 					console.log(e);
 				} ); // properties of e: type, action and loopDelta
-				object.mixer.addEventListener( 'finished', function( e ) {
+				object.mixer.addEventListener( 'finished', ( e ) => {
 					// console.log("finished event");
 					var values = e.action._clip.tracks[0].values
 					// console.log(values)  needed to find translation
 					lastZ = values[values.length - 1];
 					lastX = values[values.length - 3];
+					_doMove();
 				} );
 				theMixers.push( object.mixer );
 				theScene.add(object);
