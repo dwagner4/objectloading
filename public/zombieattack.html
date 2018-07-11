@@ -5,44 +5,68 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
-			body {
-				font-family: Monospace;
-				background-color: #000;
-				color: #fff;
-				margin: 0px;
-				overflow: hidden;
-			}
-			#info {
-				color: #fff;
-				position: absolute;
-				top: 10px;
+			html, body {
 				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				background-color: #ffffff;
+				margin: 0;
+				overflow: hidden;
+				font-family: arial;
+			}
+
+			#blocker {
+
+				position: absolute;
+
+				width: 100%;
+				height: 100%;
+
+				background-color: rgba(0,0,0,0.5);
+
+			}
+
+			#instructions {
+
+				width: 100%;
+				height: 100%;
+
+				display: -webkit-box;
+				display: -moz-box;
+				display: box;
+
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				box-orient: horizontal;
+
+				-webkit-box-pack: center;
+				-moz-box-pack: center;
+				box-pack: center;
+
+				-webkit-box-align: center;
+				-moz-box-align: center;
+				box-align: center;
+
+				color: #ffffff;
 				text-align: center;
-				z-index: 100;
-				display:block;
-			}
-			#info a {
-				color: #046;
-				font-weight: bold;
-			}
-			button {
-				padding: 10px;
-				margin: 20px;
-				background-color: #99ff99;
-				border-radius: 10px;
-			}
-			button:hover {
-				background-color: #ff9999;
+
+				cursor: pointer;
+
 			}
 		</style>
 	</head>
 
 	<body>
-		<div id="info">
-			<button id="dance" onclick="_doMove()">Next animation</button>
-			<button id="repeat" onclick="_repeat()">Repeat</button>
-			<button id="dancestop" onclick="_stopDance()">Stop</button>
+		<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
 		</div>
+
 
 		<script src="build/three.js"></script>
 
@@ -66,46 +90,77 @@
 
 
 
+			var blocker = document.getElementById( 'blocker' );
+			var instructions = document.getElementById( 'instructions' );
+
+			// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+
 			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+
 			if ( havePointerLock ) {
-				console.log("in havePointerLock");
+
 				var element = document.body;
+
 				var pointerlockchange = function ( event ) {
+
 					if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
+
 						controlsEnabled = true;
 						controls.enabled = true;
+
 						blocker.style.display = 'none';
+
 					} else {
+
 						controls.enabled = false;
+
 						blocker.style.display = 'block';
+
 						instructions.style.display = '';
+
 					}
+
 				};
+
 				var pointerlockerror = function ( event ) {
-					console.log( "pointerlockerro line 84" );
+
+					instructions.style.display = '';
+
 				};
+
 				// Hook pointer lock state change events
 				document.addEventListener( 'pointerlockchange', pointerlockchange, false );
 				document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
 				document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+
 				document.addEventListener( 'pointerlockerror', pointerlockerror, false );
 				document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
 				document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
-				// instructions.addEventListener( 'click', function ( event ) {
+
+				instructions.addEventListener( 'click', function ( event ) {
+
+					instructions.style.display = 'none';
+
 					// Ask the browser to lock the pointer
 					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
 					element.requestPointerLock();
-				// }, false );
+
+				}, false );
+
 			} else {
+
 				instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+
 			}
 
 			var controlsEnabled = false;
+
 			var moveForward = false;
 			var moveBackward = false;
 			var moveLeft = false;
 			var moveRight = false;
 			var canJump = false;
+
 			var prevTime = performance.now();
 			var velocity = new THREE.Vector3();
 			var direction = new THREE.Vector3();
@@ -145,17 +200,22 @@
 
 			function init() {
 
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+				// container = document.createElement( 'div' );
+				// document.body.appendChild( container );
+				container = document.body;
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.set( 100, 200, 300 );
+				// camera.position.set( 100, 200, 300 );
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x202020 );
 				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
 
-/**************************************/
+				var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
+				light.position.set( 0.5, 1, 0.75 );
+				scene.add( light );
+
+				/**************************************/
 
 				controls = new THREE.PointerLockControls( camera );
 				scene.add( controls.getObject() );
@@ -209,27 +269,27 @@
 
 				raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 
-/***************************************/
+				/***************************************/
 
 
 
 
-				flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
-				flashLight.castShadow = true;
-				flashLight.angle = 0.3;
-				flashLight.penumbra = 0.2;
-				flashLight.decay = 2;
-				flashLight.distance = 1000;
-				flashLight.shadow.mapSize.width = 1024;
-				flashLight.shadow.mapSize.height = 1024;
-
-				// flashLight.position.set( 150, 200, 450 );
-				flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
-				// flashLight.rotateY(-1.5);
-				scene.add(flashLight);
-
-				var lightHelper1 = new THREE.SpotLightHelper( flashLight);
-				scene.add(lightHelper1);
+				// flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
+				// flashLight.castShadow = true;
+				// flashLight.angle = 0.3;
+				// flashLight.penumbra = 0.2;
+				// flashLight.decay = 2;
+				// flashLight.distance = 1000;
+				// flashLight.shadow.mapSize.width = 1024;
+				// flashLight.shadow.mapSize.height = 1024;
+				//
+				// // flashLight.position.set( 150, 200, 450 );
+				// flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
+				// // flashLight.rotateY(-1.5);
+				// scene.add(flashLight);
+				//
+				// var lightHelper1 = new THREE.SpotLightHelper( flashLight);
+				// scene.add(lightHelper1);
 
 				// ground
 				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
@@ -272,7 +332,7 @@
 					}
 				}
 
-/****************************************/
+				/****************************************/
 				console.log(controlsEnabled);
 				if ( controlsEnabled === true ) {
 				// if ( true ) {
@@ -306,7 +366,7 @@
 					prevTime = time;
 				}
 
-/****************************************/
+				/****************************************/
 
 				renderer.render( scene, camera );
 				stats.update();
@@ -314,39 +374,39 @@
 
 // ****************  Scene Logic  *******************
 
-			var actionIndex = 2;
-			var action;
-			var lastX = 0; // X position of hips in last frame of previous animation
-			var lastZ = 0; // Z position of hips in last frame of previous animation
-
-			function _doMove() {
-				console.log("in doDance");
-				if (action) {action.stop();}
-				actionIndex += 1;
-				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
-				scene.getObjectByName("Jill").translateX(lastX);
-				scene.getObjectByName("Jill").translateZ(lastZ);
-				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
-				action.setLoop(THREE.LoopOnce)
-				action.play();
-				action.clampWhenFinished = true;
-			}
-
-			function _repeat() {
-				console.log("in doDance");
-				if (action) {action.stop();}
-
-				scene.getObjectByName("Jill").translateX(lastX);
-				scene.getObjectByName("Jill").translateZ(lastZ);
-				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
-				action.setLoop(THREE.LoopOnce)
-				action.play();
-				action.clampWhenFinished = true;
-			}
-
-			function _stopDance() {
-				scene.getObjectByName("Jill").mixer.stopAllAction();
-			}
+			// var actionIndex = 2;
+			// var action;
+			// var lastX = 0; // X position of hips in last frame of previous animation
+			// var lastZ = 0; // Z position of hips in last frame of previous animation
+			//
+			// function _doMove() {
+			// 	console.log("in doDance");
+			// 	if (action) {action.stop();}
+			// 	actionIndex += 1;
+			// 	if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
+			// 	scene.getObjectByName("Jill").translateX(lastX);
+			// 	scene.getObjectByName("Jill").translateZ(lastZ);
+			// 	action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+			// 	action.setLoop(THREE.LoopOnce)
+			// 	action.play();
+			// 	action.clampWhenFinished = true;
+			// }
+			//
+			// function _repeat() {
+			// 	console.log("in doDance");
+			// 	if (action) {action.stop();}
+			//
+			// 	scene.getObjectByName("Jill").translateX(lastX);
+			// 	scene.getObjectByName("Jill").translateZ(lastZ);
+			// 	action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+			// 	action.setLoop(THREE.LoopOnce)
+			// 	action.play();
+			// 	action.clampWhenFinished = true;
+			// }
+			//
+			// function _stopDance() {
+			// 	scene.getObjectByName("Jill").mixer.stopAllAction();
+			// }
 
 // ****************  character utility  ******************
 
