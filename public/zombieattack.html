@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Zombies</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+			#info a {
+				color: #046;
+				font-weight: bold;
+			}
+			button {
+				padding: 10px;
+				margin: 20px;
+				background-color: #99ff99;
+				border-radius: 10px;
+			}
+			button:hover {
+				background-color: #ff9999;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="info">
+			<button id="dance" onclick="_doMove()">Next animation</button>
+			<button id="repeat" onclick="_repeat()">Repeat</button>
+			<button id="dancestop" onclick="_stopDance()">Stop</button>
+		</div>
+
+		<script src="build/three.js"></script>
+
+		// required for FBXLoader
+		<script src="js/libs/inflate.min.js"></script>
+		<script src="js/loaders/FBXLoader.js"></script>
+
+		<script src="js/controls/OrbitControls.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container, stats, controls;
+			var camera, scene, renderer, light, newObj;
+
+			let jill_character = {
+					name: "Jill",
+					meshfile: 'models/Zombie_Jill/jill.fbx',
+					characterAnimations: [
+							"models/Zombie_Jill/zombiewalk.fbx",
+							"models/Zombie_Jill/zombiescream.fbx",
+							"models/Zombie_Jill/runningcrawl.fbx",
+							"models/Zombie_Jill/zombieattack.fbx",
+							"models/Zombie_Jill/zombiebiting.fbx",
+							"models/Zombie_Jill/zombiecrawl.fbx",
+							"models/Zombie_Jill/zombiedeath.fbx",
+							"models/Zombie_Jill/zombiedying.fbx",
+							"models/Zombie_Jill/zombieidle.fbx",
+							"models/Zombie_Jill/zombieneckbite.fbx",
+							"models/Zombie_Jill/zombierun.fbx"
+						]
+				};
+
+			var clock = new THREE.Clock();
+
+			var mixers = [];  // used in the animate loop to avoid seaching for mixers, duplicates on objects
+
+
+			init();
+			animate();
+
+
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera.position.set( 100, 200, 300 );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.target.set( 0, 100, 0 );
+				controls.update();
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x202020 );
+				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
+				// scene.add( spotLight );
+
+				// light = new THREE.HemisphereLight( 0x888888, 0x222222 );
+				// light.position.set( 0, 200, 0 );
+				// scene.add( light );
+
+				// light = new THREE.DirectionalLight( 0xffffff, 0.2 );
+				// light.position.set( 0, 200, 100 );
+				// light.castShadow = true;
+				// light.shadow.camera.top = 180;
+				// light.shadow.camera.bottom = -100;
+				// light.shadow.camera.left = -120;
+				// light.shadow.camera.right = 120;
+				// scene.add( light );
+
+				newObj = new THREE.SpotLight( 0xFF7F00, 2 );
+				newObj.castShadow = true;
+				newObj.angle = 0.3;
+				newObj.penumbra = 0.2;
+				newObj.decay = 2;
+				newObj.distance = 1000;
+				newObj.shadow.mapSize.width = 1024;
+				newObj.shadow.mapSize.height = 1024;
+				
+				// newObj.position.set( 150, 200, 450 );
+				newObj.position.set(camera.position.x, camera.position.y, camera.position.z);
+				// newObj.rotateY(-1.5);
+				scene.add(newObj);
+
+				var lightHelper1 = new THREE.SpotLightHelper( newObj);
+				scene.add(lightHelper1);
+
+
+
+				// ground
+				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				scene.add( mesh );
+
+				var grid = new THREE.GridHelper( 2000, 20, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				scene.add( grid );
+
+				makeFBXCharacter(jill_character, scene, mixers);
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				if ( mixers.length > 0 ) {
+					for ( var i = 0; i < mixers.length; i ++ ) {
+						mixers[ i ].update( clock.getDelta() );
+					}
+				}
+				newObj.position.set(camera.position.x, camera.position.y, camera.position.z);
+				renderer.render( scene, camera );
+				stats.update();
+			}
+
+// ****************  Scene Logic  *******************
+
+			var actionIndex = 2;
+			var action;
+			var lastX = 0; // X position of hips in last frame of previous animation
+			var lastZ = 0; // Z position of hips in last frame of previous animation
+
+			function _doMove() {
+				console.log("in doDance");
+				if (action) {action.stop();}
+				actionIndex += 1;
+				if ( actionIndex >= scene.getObjectByName("Jill").animations.length ) {actionIndex = 0;}
+				scene.getObjectByName("Jill").translateX(lastX);
+				scene.getObjectByName("Jill").translateZ(lastZ);
+				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+				action.setLoop(THREE.LoopOnce)
+				action.play();
+				action.clampWhenFinished = true;
+			}
+
+			function _repeat() {
+				console.log("in doDance");
+				if (action) {action.stop();}
+
+				scene.getObjectByName("Jill").translateX(lastX);
+				scene.getObjectByName("Jill").translateZ(lastZ);
+				action = scene.getObjectByName("Jill").mixer.clipAction( scene.getObjectByName("Jill").animations[ actionIndex ] );
+				action.setLoop(THREE.LoopOnce)
+				action.play();
+				action.clampWhenFinished = true;
+			}
+
+			function _stopDance() {
+				scene.getObjectByName("Jill").mixer.stopAllAction();
+			}
+
+// ****************  character utility  ******************
+
+		// @charParams is object with meshfile and array of animations
+		function makeFBXCharacter (charParams, theScene, theMixers) {
+			var loader = new THREE.FBXLoader();
+
+			var testAnimations = [];
+			for (var i = 0; i < charParams.characterAnimations.length; i++) {
+				loader.load( charParams.characterAnimations[i], ( obj ) => {
+					testAnimations.push( obj.animations[ 0 ] );
+				} );
+			}
+			loader.load( charParams.meshfile, ( object ) => {
+				object.traverse( function ( child ) {
+					if ( child.isMesh ) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+					}
+				} );
+				for (var i = 0; i < testAnimations.length; i++) {
+					object.animations.push( testAnimations[i] );
+				}
+				object.name = charParams.name;
+				object.mixer = new THREE.AnimationMixer( object );
+				object.mixer.addEventListener( 'loop', function( e ) {
+					console.log("loop event")
+					console.log(e);
+				} ); // properties of e: type, action and loopDelta
+				object.mixer.addEventListener( 'finished', function( e ) {
+					// console.log("finished event");
+					var values = e.action._clip.tracks[0].values
+					// console.log(values)  needed to find translation
+					lastZ = values[values.length - 1];
+					lastX = values[values.length - 3];
+				} );
+				theMixers.push( object.mixer );
+				theScene.add(object);
+			} );
+		}
+
+
+
+
+		</script>
+
+	</body>
+</html>
