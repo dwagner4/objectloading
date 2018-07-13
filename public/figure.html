@@ -2,25 +2,39 @@
 <html>
   <head>
     <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+    <script src="js/libs/inflate.min.js"></script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
   </head>
   <body>
     <a-scene>
       <a-assets>
         <a-asset-item id="figure" src="models/RiggedFigure/glTF/RiggedFigure.gltf"></a-asset-item>
+        <!-- <a-asset-item id="moose" src="models/Forest_fbx/Low_Moose_bull_v01.fbx"></a-asset-item> -->
         <!-- <a-asset-item id="gunbot" src="RiggedFigure/gunbot.gltf"></a-asset-item> -->
-        <a-asset-item id="ant-obj" src="models/fire-ant-obj/fire-ant.obj"></a-asset-item>
-        <a-asset-item id="ant-mtl" src="models/fire-ant-obj/fire-ant.mtl"></a-asset-item>
+        <!-- <a-asset-item id="ant-obj" src="models/fire-ant-obj/fire-ant.obj"></a-asset-item>
+        <a-asset-item id="ant-mtl" src="models/fire-ant-obj/fire-ant.mtl"></a-asset-item> -->
       </a-assets>
       <a-entity gltf-model="#figure" position="0 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
+      <a-entity fbx-model="src: models/Forest_fbx/Low_Moose_bull_v01.fbx"></a-entity>
       <!-- <a-entity gltf-model="#gunbot" position="2 1.25 -2" rotation="90 0 0" animation-mixer></a-entity> -->
-      <a-entity scale="1 1 1" position="-2 0 -3" obj-model="obj: #ant-obj; mtl: #ant-mtl"></a-entity>
+      <!-- <a-entity scale="1 1 1" position="-2 0 -3" obj-model="obj: #ant-obj; mtl: #ant-mtl"></a-entity> -->
 
       <!-- Out of the box environment! -->
       <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
-
-
     </a-scene>
+    <!-- <script src="js/libs/inflate.min.js"></script>
+    <script src="js/loaders/FBXLoader.js"></script>
+    <script>
+      // BEGIN Forest_fbx loader code
+      var scene = document.querySelector('a-scene').object3D;
+      var moose = document.getElementById('moose');
+      var objectLoader = new THREE.FBXLoader();
+      objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", function ( obj ) {
+        // moose.sceneEl.object3D = obj;
+        scene.add( obj );
+        console.log( obj );
+      } );
+    </script> -->
   </body>
 </html>
