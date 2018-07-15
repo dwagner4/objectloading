@@ -1,8 +1,8 @@
-#PointerLockControls
+# PointerLockControls
 pointer lock gives FPS controls to the mouse
 
 ## import the script
-<script src="js/controls/PointerLockControls.js"></script>
+    <script src="js/controls/PointerLockControls.js"></script>
 
 ## at top of script (maybe should be in init() ) set up pointerlockchange event listeners
 // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
