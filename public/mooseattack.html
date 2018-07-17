@@ -155,6 +155,11 @@
 				meshfile: 'models/Forest_fbx/Low_Moose_bull_v01.fbx',
 				characterAnimations: []
 			}
+			let forestCharacter = {
+				name: "Forest",
+				meshfile: 'models/Forest_fbx/Forest_v01.fbx',
+				characterAnimations: []
+			}
 
 			var clock = new THREE.Clock();
 
@@ -167,13 +172,9 @@
 
 
 			function init() {
-
-				// container = document.createElement( 'div' );
-				// document.body.appendChild( container );
 				container = document.body;
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				// camera.position.set( 100, 200, 300 );
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x202020 );
@@ -241,9 +242,6 @@
 
 				/***************************************/
 
-
-
-
 				flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
 				flashLight.castShadow = true;
 				flashLight.angle = 0.5;
@@ -254,8 +252,6 @@
 				flashLight.shadow.mapSize.height = 1024;
 
 				flashLight.position.set( 0, 300, 850);
-				// flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
-				// flashLight.rotateY(-1.5);
 				scene.add(flashLight);
 
 				// var lightHelper1 = new THREE.SpotLightHelper( flashLight);
@@ -273,6 +269,8 @@
 				scene.add( grid );
 
 				makeFBXCharacter(mooseCharacter, scene, mixers);
+				makeFBXCharacter(forestCharacter, scene, mixers);
+
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -305,12 +303,6 @@
 				/****************************************/
 				// console.log(controlsEnabled);
 				if ( controlsEnabled === true ) {
-				// if ( true ) {
-					// console.log("in controls Enabled");
-					// raycaster.ray.origin.copy( controls.getObject().position );
-					// raycaster.ray.origin.y -= 10;
-					// var intersections = raycaster.intersectObjects( objects );
-					// var onObject = intersections.length > 0;
 					var time = performance.now();
 					var delta = ( time - prevTime ) / 1000;
 					velocity.x -= velocity.x * 10.0 * delta;
@@ -321,18 +313,8 @@
 					direction.normalize(); // this ensures consistent movements in all directions
 					if ( moveForward || moveBackward ) velocity.z -= direction.z * 400.0 * delta;
 					if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
-					// if ( onObject === true ) {
-					// 	velocity.y = Math.max( 0, velocity.y );
-					// 	canJump = true;
-					// }
 					controls.getObject().translateX( velocity.x * delta );
-					// controls.getObject().translateY( velocity.y * delta );
 					controls.getObject().translateZ( velocity.z * delta );
-					// if ( controls.getObject().position.y < 10 ) {
-					// 	velocity.y = 0;
-					// 	controls.getObject().position.y = 10;
-					// 	canJump = true;
-					// }
 					prevTime = time;
 				}
 
@@ -419,6 +401,7 @@
 				} );
 				theMixers.push( object.mixer );
 				theScene.add(object);
+				console.log(object);
 			} );
 		}
 
