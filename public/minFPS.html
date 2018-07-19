@@ -18,18 +18,13 @@
 			}
 
 			#blocker {
-
 				position: absolute;
-
 				width: 100%;
 				height: 100%;
-
 				background-color: rgba(0,0,0,0.5);
-
 			}
 
 			#instructions {
-
 				width: 100%;
 				height: 100%;
 
@@ -53,7 +48,6 @@
 				text-align: center;
 
 				cursor: pointer;
-
 			}
 		</style>
 	</head>
@@ -133,9 +127,13 @@
 				var instructions = document.getElementById( 'instructions' );
 
 				// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+				// set up the event listeners
 				var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 				if ( havePointerLock ) {
 					var element = document.body;
+
+					// required pointerlock function pointerlockchange and pointerlockerror
+
 					var pointerlockchange = function ( event ) {
 						if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
 							controlsEnabled = true;
@@ -171,9 +169,13 @@
 				}
 
 				controls = new THREE.PointerLockControls( camera );
+
+				// getObject returns the empty object the camera is appended to
 				controls.getObject().position.y = 1;
 				controls.getObject().position.z = 10;
 				scene.add( controls.getObject() );
+
+				// WASD controls
 				var onKeyDown = function ( event ) {
 					console.log("keydown");
 					switch ( event.keyCode ) {
@@ -248,7 +250,7 @@
 					controls.getObject().translateZ( velocity.z * delta );
 					prevTime = time;
 				}
-				
+
 				renderer.render( scene, camera );
 
 			}
