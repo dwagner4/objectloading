@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="js/libs/inflate.min.js"></script>
+    <script src="js/loaders/FBXLoader.js"></script>
+    <script src="components/hello-comp.js"></script>
+    <script src="components/fbx-comp.js"></script>
+    <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script> -->
+    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+  </head>
+  <body>
+    <a-scene hello-world fbx-comp>
+      <a-entity id="bull" position="0 0 -3" rotation="0 0 0"></a-entity>
+      <a-entity id="cow" position="-2 0 -6" rotation="0 0 0"></a-entity>
+      <!-- Out of the box environment! -->
+      <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+    </a-scene>
+
+
+
+    <script>
+      // BEGIN Forest_fbx loader code
+      // AFRAME.registerComponent('hello-world', {
+      //   init: function () {
+      //     console.log('Hello, World!');
+      //   }
+      // });
+      var scene = document.querySelector('a-scene').object3D;
+      // var moose = document.getElementById('moose');
+      // var cow = document.getElementById('cow');
+      // var objectLoader = new THREE.FBXLoader();
+      // objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj ) => {
+      //   moose.setObject3D('bull', obj);
+      // } );
+      // objectLoader.load("models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {
+      //   cow.setObject3D('cow', obj2);
+      // } );
+    </script>
+  </body>
+</html>
