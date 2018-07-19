@@ -2,7 +2,7 @@
 index.html will point to several interesting pages.
 
 ## duck.html and figure.html
-Both of these load .glTF models into an aframe scene.  the duck and box man are .glTF while the walking robot is .fbx converted using Blender from maximo.com.  I have failed to convert the moose in blender.
+Both of these load .glTF models into an aframe scene.  the duck and box man are .glTF while the walking robot is .fbx converted using Blender from maximo.com.  I have failed to convert the moose in blender, so I'm loading both bullmoose and cow from a script.
 
 ## animals.html
 Loads a moose .fbx model into a scene using only three.js.  contains 21 animations.
