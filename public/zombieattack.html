@@ -86,53 +86,6 @@
 			var container, stats, controls;
 			var camera, scene, renderer, light, flashLight;
 
-			/***************************************/
-
-
-
-			var blocker = document.getElementById( 'blocker' );
-			var instructions = document.getElementById( 'instructions' );
-
-			// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
-			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-			if ( havePointerLock ) {
-				var element = document.body;
-				var pointerlockchange = function ( event ) {
-					if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
-						controlsEnabled = true;
-						controls.enabled = true;
-						blocker.style.display = 'none';
-					} else {
-						controls.enabled = false;
-						blocker.style.display = 'block';
-						instructions.style.display = '';
-					}
-				};
-				var pointerlockerror = function ( event ) {
-					instructions.style.display = '';
-				};
-				// Hook pointer lock state change events
-				document.addEventListener( 'pointerlockchange', pointerlockchange, false );
-				document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
-				document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
-
-				document.addEventListener( 'pointerlockerror', pointerlockerror, false );
-				document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
-				document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
-
-				instructions.addEventListener( 'click', function ( event ) {
-					instructions.style.display = 'none';
-					// Ask the browser to lock the pointer
-					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-					element.requestPointerLock();
-					//start the action
-					_doMove();
-				}, false );
-
-			} else {
-				instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
-			}
-
 			var controlsEnabled = false;
 
 			var moveForward = false;
@@ -193,9 +146,101 @@
 				scene.background = new THREE.Color( 0x202020 );
 				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
 
+				// makeFBXCharacter(jill_character, scene, mixers);
+
 				var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
 				light.position.set( 0.5, 1, 0.75 );
 				scene.add( light );
+
+
+				flashLight = new THREE.SpotLight( 0xFF7F00, 4 );
+				flashLight.castShadow = true;
+				flashLight.angle = 0.75;
+				flashLight.penumbra = 0.4;
+				flashLight.decay = 2;
+				flashLight.distance = 1500;
+				flashLight.shadow.mapSize.width = 1024;
+				flashLight.shadow.mapSize.height = 1024;
+
+				flashLight.position.set( 0, 200, 650);
+				// flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
+				// flashLight.rotateY(-1.5);
+				scene.add(flashLight);
+
+				makeFBXCharacter(jill_character, scene, mixers);
+
+				// var lightHelper1 = new THREE.SpotLightHelper( flashLight);
+				// scene.add(lightHelper1);
+
+				// ground
+				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				scene.add( mesh );
+
+				var grid = new THREE.GridHelper( 2000, 20, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				scene.add( grid );
+
+				// makeFBXCharacter(jill_character, scene, mixers);
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				/***********    Start       FPS       ********** */
+
+				var blocker = document.getElementById( 'blocker' );
+				var instructions = document.getElementById( 'instructions' );
+
+				// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+				var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+				if ( havePointerLock ) {
+					var element = document.body;
+					var pointerlockchange = function ( event ) {
+						if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
+							controlsEnabled = true;
+							controls.enabled = true;
+							blocker.style.display = 'none';
+						} else {
+							controls.enabled = false;
+							blocker.style.display = 'block';
+							instructions.style.display = '';
+						}
+					};
+					var pointerlockerror = function ( event ) {
+						instructions.style.display = '';
+					};
+					// Hook pointer lock state change events
+					document.addEventListener( 'pointerlockchange', pointerlockchange, false );
+					document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
+					document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+
+					document.addEventListener( 'pointerlockerror', pointerlockerror, false );
+					document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
+					document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+
+					instructions.addEventListener( 'click', function ( event ) {
+						instructions.style.display = 'none';
+						// Ask the browser to lock the pointer
+						element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+						element.requestPointerLock();
+						//start the action
+						_doMove();
+					}, false );
+
+				} else {
+					instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+				}
 
 				/*******************  FPS and WASD Controls *******************/
 
@@ -255,51 +300,6 @@
 
 				/***************************************/
 
-
-
-
-				flashLight = new THREE.SpotLight( 0xFF7F00, 2 );
-				flashLight.castShadow = true;
-				flashLight.angle = 0.5;
-				flashLight.penumbra = 0.2;
-				flashLight.decay = 2;
-				flashLight.distance = 1500;
-				flashLight.shadow.mapSize.width = 1024;
-				flashLight.shadow.mapSize.height = 1024;
-
-				flashLight.position.set( 0, 300, 850);
-				// flashLight.position.set(camera.position.x, camera.position.y, camera.position.z);
-				// flashLight.rotateY(-1.5);
-				scene.add(flashLight);
-
-				// var lightHelper1 = new THREE.SpotLightHelper( flashLight);
-				// scene.add(lightHelper1);
-
-				// ground
-				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
-				mesh.rotation.x = - Math.PI / 2;
-				mesh.receiveShadow = true;
-				scene.add( mesh );
-
-				var grid = new THREE.GridHelper( 2000, 20, 0x000000, 0x000000 );
-				grid.material.opacity = 0.2;
-				grid.material.transparent = true;
-				scene.add( grid );
-
-				makeFBXCharacter(jill_character, scene, mixers);
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.shadowMap.enabled = true;
-				container.appendChild( renderer.domElement );
-
-				window.addEventListener( 'resize', onWindowResize, false );
-
-				// stats
-				stats = new Stats();
-				container.appendChild( stats.dom );
-
 			}
 
 			function onWindowResize() {
@@ -317,7 +317,7 @@
 				}
 
 				/****************************************/
-				console.log(controlsEnabled);
+
 				if ( controlsEnabled === true ) {
 				// if ( true ) {
 					// console.log("in controls Enabled");
@@ -342,9 +342,9 @@
 					controls.getObject().translateX( velocity.x * delta );
 					controls.getObject().translateY( velocity.y * delta );
 					controls.getObject().translateZ( velocity.z * delta );
-					if ( controls.getObject().position.y < 10 ) {
+					if ( controls.getObject().position.y < 100 ) {
 						velocity.y = 0;
-						controls.getObject().position.y = 10;
+						controls.getObject().position.y = 100;
 						canJump = true;
 					}
 					prevTime = time;
@@ -430,6 +430,7 @@
 				} );
 				theMixers.push( object.mixer );
 				theScene.add(object);
+				flashLight.target = scene.getObjectByName('Jill');
 			} );
 		}
 
