@@ -14,7 +14,7 @@
         <a-asset-item id="figure" src="models/RiggedFigure/glTF/RiggedFigure.gltf"></a-asset-item>
         <a-asset-item id="mixamo" src="models/testgltf/testgltf.gltf"></a-asset-item>
       </a-assets>
-      <a-entity gltf-model="#figure" position="0 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
+      <a-entity id="boxmanentity" gltf-model="#figure" position="0 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
       <a-entity gltf-model="#mixamo" position="3 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
       <a-entity id="moose" position="-3 0 -3" rotation="0 0 0"></a-entity>
       <a-entity id="cow" position="-2 0 -6" rotation="0 0 0"></a-entity>
@@ -26,10 +26,16 @@
       // BEGIN Forest_fbx loader code
       var scene = document.querySelector('a-scene').object3D;
       var moose = document.getElementById('moose');
+      var boxman = document.getElementById('boxmanentity');
       var cow = document.getElementById('cow');
       var objectLoader = new THREE.FBXLoader();
       objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj ) => {
         moose.setObject3D('bull', obj);
+        console.log(obj);
+        moose.object3D.animations = obj.animations;
+        console.log(moose.object3D);
+        console.log("box man");
+        console.log(boxman.object3D);
       } );
       objectLoader.load("models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {
         cow.setObject3D('cow', obj2);
