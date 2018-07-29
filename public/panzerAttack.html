@@ -21,25 +21,13 @@
 		<script src="js/controls/OrbitControls.js"></script>
 		<script type="module" src="modules/environments/planegrid.js"></script>
 		<script type="module" src="modules/environments/hemilight.js"></script>
+		<script type="module" src="modules/panzercamera.js"></script>
 	</head>
 
 	<body>
-
-		<!-- <script src="build/three.js"></script>
-
-		<script src="js/controls/OrbitControls.js"></script> -->
-
 		<script>
 
-			// const modulename = './modules/environments/testtest.js';
-			// import(modulename).then( (result) => {
-			// 	console.log("im in the stupid promise!!");
-			// 	console.log(result);
-			// 	result.txtlog("halaluya");
-			// } );
-
-			var container, controls;
-			var camera, scene, renderer, light;
+			let container, controls, camera, scene, renderer;
 
 			init();
 			animate();
@@ -47,49 +35,28 @@
 			function init() {
 				container = document.body;
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.set( 10, 20, 30 );
-
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x202020 );
 				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
 
 				import('./modules/environments/planegrid.js').then( (result) => {
-					for (var s = 0; s < result.environ.length; s++) {
+					for (let s = 0; s < result.environ.length; s++) {
 						scene.add(result.environ[s]);
 					}
 				} );
 
 				import('./modules/environments/hemilight.js').then( (result) => {
-					for (var s = 0; s < result.lights.length; s++) {
+					for (let s = 0; s < result.lights.length; s++) {
 						scene.add(result.lights[s]);
 					}
 				} );
 
-				var loader = new THREE.ObjectLoader();
-
-				loader.load(
-					// resource URL
-					"models/panzer.json",
-
-					// onLoad callback
-					// Here the loaded data is assumed to be an object
-					function ( obj ) {
-						// Add the loaded object to the scene
+				let loader = new THREE.ObjectLoader();
+				loader.load( "models/panzer.json", ( obj ) => {
 						scene.add( obj );
-					},
+				} );
 
-					// onProgress callback
-					function ( xhr ) {
-						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-					},
-
-					// onError callback
-					function ( err ) {
-						console.error( 'An error happened' );
-					}
-				);
-
+				import('./modules/panzercamera.js');
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -98,13 +65,6 @@
 				container.appendChild( renderer.domElement );
 
 				window.addEventListener( 'resize', onWindowResize, false );
-
-				/*******************  Orbit Controls *******************/
-
-				controls = new THREE.OrbitControls( camera );
-				controls.target.set( 0, 1, 0 );
-				controls.update();
-
 			}
 
 			function onWindowResize() {
