@@ -58,8 +58,9 @@
 				grid.material.transparent = true;
 				scene.add( grid );
 
-				var geometry = new THREE.PlaneGeometry( 20, 20, 64, 64);
+				var geometry = new THREE.PlaneGeometry( 20, 20, 32, 32);
 				var texture = new THREE.TextureLoader().load( 'models/512x512hMap.jpg' );
+
 				var material = new THREE.MeshPhongMaterial( {
 					color: 0xff0000,
 					side: THREE.DoubleSide,
@@ -68,6 +69,7 @@
 					displacementScale: -5.0,
           // displacementBias: 0
 				});
+				console.log(material);
 				var plane = new THREE.Mesh( geometry, material );
 				plane.rotateX( Math.PI / 2 );
 				scene.add( plane );
