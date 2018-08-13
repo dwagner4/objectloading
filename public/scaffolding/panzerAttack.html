@@ -17,11 +17,11 @@
 				font-family: arial;
 			}
 		</style>
-		<script src="build/three.js"></script>
-		<script src="js/controls/OrbitControls.js"></script>
-		<script type="module" src="modules/environments/planegrid.js"></script>
-		<script type="module" src="modules/environments/hemilight.js"></script>
-		<script type="module" src="modules/panzercamera.js"></script>
+		<script src="../build/three.js"></script>
+		<script src="../js/controls/OrbitControls.js"></script>
+		<script type="module" src="../modules/environments/planegrid.js"></script>
+		<script type="module" src="../modules/environments/hemilight.js"></script>
+		<script type="module" src="../modules/panzercamera.js"></script>
 	</head>
 
 	<body>
@@ -39,24 +39,24 @@
 				scene.background = new THREE.Color( 0x202020 );
 				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
 
-				import('./modules/environments/planegrid.js').then( (result) => {
+				import('../modules/environments/planegrid.js').then( (result) => {
 					for (let s = 0; s < result.environ.length; s++) {
 						scene.add(result.environ[s]);
 					}
 				} );
 
-				import('./modules/environments/hemilight.js').then( (result) => {
+				import('../modules/environments/hemilight.js').then( (result) => {
 					for (let s = 0; s < result.lights.length; s++) {
 						scene.add(result.lights[s]);
 					}
 				} );
 
 				let loader = new THREE.ObjectLoader();
-				loader.load( "models/panzer.json", ( obj ) => {
+				loader.load( "../models/panzer.json", ( obj ) => {
 						scene.add( obj );
 				} );
 
-				import('./modules/panzercamera.js');
+				import('../modules/panzercamera.js');
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );

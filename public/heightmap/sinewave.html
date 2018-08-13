@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>OrbitControls</title>
+		<title>HeightMap</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -21,9 +21,9 @@
 
 	<body>
 
-		<script src="build/three.js"></script>
+		<script src="../build/three.js"></script>
 
-		<script src="js/controls/OrbitControls.js"></script>
+		<script src="../js/controls/OrbitControls.js"></script>
 
 		<script>
 
@@ -43,7 +43,7 @@
 				scene.background = new THREE.Color( 0x202020 );
 				scene.fog = new THREE.Fog( 0x202020, 200, 1000 );
 
-				var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
+				var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 1.5 );
 				light.position.set( 0.5, 1, 0.75 );
 				scene.add( light );
 
@@ -58,16 +58,32 @@
 				grid.material.transparent = true;
 				scene.add( grid );
 
-				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-				var cube = new THREE.Mesh( geometry, material );
-				scene.add( cube );
+				var geometry = new THREE.PlaneGeometry( 20, 20, 32, 32);
+
+				// 32 divisions so 33 rows of vertices
+				let totalvertex = 33 * 33 ;
+				for (var i = 0; i < totalvertex; i++) {
+					let zz = Math.sin((i % 33)/33 * 2 * Math.PI) ;
+					geometry.vertices[i].z = zz;
+				}
+				console.log( geometry );
+
+				var material = new THREE.MeshPhongMaterial( {
+					color: 0xff0000,
+					side: THREE.DoubleSide,
+					wireframe: true
+				});
+
+				var plane = new THREE.Mesh( geometry, material );
+				plane.rotateX( Math.PI / 2 );
+				scene.add( plane );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.shadowMap.enabled = true;
 				container.appendChild( renderer.domElement );
+
 
 				window.addEventListener( 'resize', onWindowResize, false );
 

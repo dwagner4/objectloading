@@ -21,9 +21,9 @@
 
 	<body>
 
-		<script src="build/three.js"></script>
+		<script src="../build/three.js"></script>
 
-		<script src="js/controls/OrbitControls.js"></script>
+		<script src="../js/controls/OrbitControls.js"></script>
 
 		<script>
 
@@ -59,7 +59,7 @@
 				scene.add( grid );
 
 				var geometry = new THREE.PlaneGeometry( 20, 20, 32, 32);
-				var texture = new THREE.TextureLoader().load( 'models/512x512hMap.jpg' );
+				var texture = new THREE.TextureLoader().load( '../models/512x512hMap.jpg' );
 
 				var material = new THREE.MeshPhongMaterial( {
 					color: 0xff0000,

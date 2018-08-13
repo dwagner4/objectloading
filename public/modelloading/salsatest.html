@@ -45,16 +45,16 @@
 			<button id="dancestop" onclick="_stopDance()">Stop</button>
 		</div>
 
-		<script src="build/three.js"></script>
+		<script src="../build/three.js"></script>
 
 		// required for FBXLoader
-		<script src="js/libs/inflate.min.js"></script>
-		<script src="js/loaders/FBXLoader.js"></script>
+		<script src="../js/libs/inflate.min.js"></script>
+		<script src="../js/loaders/FBXLoader.js"></script>
 
-		<script src="js/controls/OrbitControls.js"></script>
+		<script src="../js/controls/OrbitControls.js"></script>
 
-		<script src="js/Detector.js"></script>
-		<script src="js/libs/stats.min.js"></script>
+		<script src="../js/Detector.js"></script>
+		<script src="../js/libs/stats.min.js"></script>
 
 		<script>
 
@@ -119,17 +119,17 @@
 
 				var testAnimation, testAnimation2;
 
-				loader.load( 'models/Hip Hop Dancing.fbx', ( obj ) => {
+				loader.load( '../models/Hip Hop Dancing.fbx', ( obj ) => {
 					testAnimation = obj.animations[ 0 ]
 					console.log( testAnimation );
 				} );
 
-				loader.load( 'models/Golf Drive.fbx', ( obj ) => {
+				loader.load( '../models/Golf Drive.fbx', ( obj ) => {
 					testAnimation2 = obj.animations[ 0 ]
 					console.log( testAnimation2 );
 				} );
 
-				loader.load( 'models/Samba Dancing.fbx', ( object ) => {
+				loader.load( '../models/Samba Dancing.fbx', ( object ) => {
 
 
 

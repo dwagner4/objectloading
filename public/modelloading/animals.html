@@ -42,10 +42,10 @@
 			<button id="dance" onclick="_doMove()">Next animation</button><span id="msg">Wait for it !!</span>
 			<!-- <button id="dancestop" onclick="_stopDance()">Stop</button> -->
 		</div>
-		<script src="build/three.js"></script>
-		<script src="js/controls/OrbitControls.js"></script>
-    <script src="js/libs/inflate.min.js"></script>
-    <script src="js/loaders/FBXLoader.js"></script>
+		<script src="../build/three.js"></script>
+		<script src="../js/controls/OrbitControls.js"></script>
+    <script src="../js/libs/inflate.min.js"></script>
+    <script src="../js/loaders/FBXLoader.js"></script>
 		<script>
 
 			var container;
@@ -88,7 +88,7 @@
 
 				// BEGIN Clara.io JSON loader code
 				var objectLoader = new THREE.FBXLoader();
-				objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", function ( obj ) {
+				objectLoader.load("../models/Forest_fbx/Low_Moose_bull_v01.fbx", function ( obj ) {
 
 					obj.mixer = new THREE.AnimationMixer( obj );
 					mixers.push( obj.mixer );

@@ -2,17 +2,17 @@
 <html>
   <head>
     <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
-    <script src="js/libs/inflate.min.js"></script>
-    <script src="js/loaders/FBXLoader.js"></script>
+    <script src="../js/libs/inflate.min.js"></script>
+    <script src="../js/loaders/FBXLoader.js"></script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
-    <script src="components/fbx-comp.js"></script>
+    <script src="../components/fbx-comp.js"></script>
   </head>
   <body>
     <a-scene>
       <a-assets>
-        <a-asset-item id="figure" src="models/RiggedFigure/glTF/RiggedFigure.gltf"></a-asset-item>
-        <a-asset-item id="mixamo" src="models/testgltf/testgltf.gltf"></a-asset-item>
+        <a-asset-item id="figure" src="../models/RiggedFigure/glTF/RiggedFigure.gltf"></a-asset-item>
+        <a-asset-item id="mixamo" src="../models/testgltf/testgltf.gltf"></a-asset-item>
       </a-assets>
       <a-entity id="boxmanentity" gltf-model="#figure" position="0 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
       <a-entity gltf-model="#mixamo" position="3 0 -3" rotation="0 0 0" animation-mixer="loop: pingpong"></a-entity>
@@ -29,7 +29,7 @@
       var boxman = document.getElementById('boxmanentity');
       var cow = document.getElementById('cow');
       var objectLoader = new THREE.FBXLoader();
-      objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj ) => {
+      objectLoader.load("../models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj ) => {
         moose.setObject3D('bull', obj);
         console.log(obj);
         moose.object3D.animations = obj.animations;
@@ -37,7 +37,7 @@
         console.log("box man");
         console.log(boxman.object3D);
       } );
-      objectLoader.load("models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {
+      objectLoader.load("../models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {
         cow.setObject3D('cow', obj2);
       } );
     </script>

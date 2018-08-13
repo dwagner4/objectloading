@@ -8,10 +8,10 @@ AFRAME.registerComponent('fbx-comp', {
     var cow = document.getElementById('cow');
     var bull = document.getElementById('bull');
     var objectLoader = new THREE.FBXLoader();
-    objectLoader.load("models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {      
+    objectLoader.load("../models/Forest_fbx/Low_Moose_cow_v01.fbx", ( obj2 ) => {
       cow.setObject3D('cow', obj2);
     } );
-    objectLoader.load("models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj2 ) => {
+    objectLoader.load("../models/Forest_fbx/Low_Moose_bull_v01.fbx", ( obj2 ) => {
       bull.setObject3D('bull', obj2);
     } );
   }
