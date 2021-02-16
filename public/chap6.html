@@ -9,114 +9,46 @@
 	</head>
 	<body>
 		<script src="build/three.js"></script>
-		<script>
-			// The "scene" is where stuff in our game will happen:
+
+		<script type="module">
+			import { setUpLighting }from './chap6scripts/lighting.js'
+			import { makeCamera }from './chap6scripts/ch6camera.js'
+			import { makeAvatar }from './chap6scripts/avatar.js'
+			import { makeLandscape }from './chap6scripts/landscape.js'
+			import { walk }from './chap6scripts/animations.js'
+
 			var scene = new THREE.Scene();
+			var clock = new THREE.Clock();
+ 
+			makeLandscape( scene )
+			var light = setUpLighting()
+			var camera = makeCamera()
+			var avatar = makeAvatar()
+			
 
-			var flat = {flatShading: true};
-			var light = new THREE.AmbientLight('white', 0.8);
+			var marker = new THREE.Object3D();
+			marker.add(avatar);
+			marker.add(camera);
+			
 			scene.add(light);
+			scene.add(marker);
 
-			// The "camera" is what sees the stuff:
-			var aspectRatio = window.innerWidth / window.innerHeight;
-			var camera = new THREE.PerspectiveCamera(75, aspectRatio, 1, 10000);
-			camera.position.z = 500;	
-			// scene.add(camera);
-
-			// The "renderer" draws what the camera sees onto the screen:
 			var renderer = new THREE.WebGLRenderer({antialias: true});
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			document.body.appendChild(renderer.domElement);
 
-			// ******** START CODING ON THE NEXT LINE ********
-			var marker = new THREE.Object3D();
-			scene.add(marker);
-
-			//var cover = new THREE.MeshNormalMaterial({flatShading: true});
-			var body = new THREE.SphereGeometry(100);
-			var cover = new THREE.MeshNormalMaterial();
-			var avatar = new THREE.Mesh(body, cover);
-			marker.add(avatar);
-
-			var hand = new THREE.SphereGeometry(50);
-
-			var rightHand = new THREE.Mesh(hand, cover);
-			rightHand.position.set(-150, 0, 0);
-			avatar.add(rightHand);
-
-			var leftHand = new THREE.Mesh(hand, cover);
-			leftHand.position.set(150, 0, 0);
-			avatar.add(leftHand);
-
-			var foot = new THREE.SphereGeometry(50);
-
-			var rightFoot = new THREE.Mesh(foot, cover);
-			rightFoot.position.set(-75, -125, 0);
-			avatar.add(rightFoot);
-
-			var leftFoot = new THREE.Mesh(foot, cover);
-			leftFoot.position.set(75, -125, 0);
-			avatar.add(leftFoot);
-
-			marker.add(camera);
-
-			function makeTreeAt(x, z) {
-				var trunk = new THREE.Mesh(
-					new THREE.CylinderGeometry(50, 50, 200),
-					new THREE.MeshBasicMaterial({color: 'sienna'})
-				);
-				var top = new THREE.Mesh(
-					new THREE.SphereGeometry(150),
-					new THREE.MeshBasicMaterial({color: 'forestgreen'})
-				);
-				top.position.y = 175;
-				trunk.add(top);
-			
-				trunk.position.set(x, -75, z);
-				scene.add(trunk);
-			}
-			makeTreeAt( 500, 0);
-			makeTreeAt(-500, 0);
-			makeTreeAt( 750, -1000);
-			makeTreeAt(-750, -1000);
-
-			// Now, animate what the camera sees on the screen:
-			var clock = new THREE.Clock();
 			var isCartwheeling = false;
 			var isFlipping = false;
 			var isMovingRight = false;
 			var isMovingLeft = false;
 			var isMovingForward = false
 			var isMovingBack = false;
-			function animate() {
-				requestAnimationFrame(animate);
-				walk();
-				acrobatics();
-				renderer.render(scene, camera);
-			}
-			animate();
 
-			function walk() {
-				if (!isWalking()) return;
-				var speed = 10;
-				var size = 100;
-				var time = clock.getElapsedTime();
-				var position = Math.sin(speed * time) * size;
-				rightHand.position.z = position;
-				leftHand.position.z = -position;
-				rightFoot.position.z = -position;
-				leftFoot.position.z = position;
-			}
-
-			function isWalking() {
-				if (isMovingRight) return true;
-				if (isMovingLeft) return true;
-				if (isMovingForward) return true;
-				if (isMovingBack) return true;
-				return false;
-			}
-
-			function acrobatics() { 
+			function moveAvatar() { 
+				if ( isMovingRight || isMovingLeft || isMovingForward || isMovingBack ) {
+					var time = clock.getElapsedTime();
+					walk( avatar, time );
+				}
 				if (isCartwheeling) { 
 					avatar.rotation.z = avatar.rotation.z + 0.05;
 				}
@@ -157,6 +89,14 @@
 				if (code == 'ArrowUp') isMovingForward = false;
 				if (code == 'ArrowDown') isMovingBack = false;
 			}
+
+			function animate() {
+				requestAnimationFrame(animate);
+				moveAvatar()
+				renderer.render(scene, camera);
+			}
+			animate();
+
 		</script>
 	</body>
 </html>
